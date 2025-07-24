@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expense Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f7f9fc;
+        }
+
+        header {
+            background: #4e73df;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .chart-box {
+            background: #fff;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: 100% !important;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin: 30px auto;
+            background: #4e73df;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>Expense Tracker - Dashboard</header>
+
+<div class="container">
+
+    <div class="chart-box">
+        <h2>Total Expense: ₹ <span th:text="${totalExpense}">0</span></h2>
+    </div>
+
+    <div class="chart-box">
+        <h2>Category-wise Expense (Pie)</h2>
+        <div class="chart-container">
+            <canvas id="categoryPie"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <h2>Category-wise Expense (Doughnut)</h2>
+        <div class="chart-container">
+            <canvas id="categoryDoughnut"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <h2>Monthly Expense Trend (Bar)</h2>
+        <div class="chart-container">
+            <canvas id="monthlyBar"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <h2>Monthly Expense Trend (Line)</h2>
+        <div class="chart-container">
+            <canvas id="monthlyLine"></canvas>
+        </div>
+    </div>
+
+    <a class="back-btn" th:href="@{/list}">← Back to Expenses</a>
+
+</div>
+
+<script th:inline="javascript">
+    const categoryData = /*[[${categoryExpenseMap}]]*/ {};
+    const monthlyData = /*[[${monthlyExpenseMap}]]*/ {};
+
+    const categoryLabels = Object.keys(categoryData);
+    const categoryValues = Object.values(categoryData);
+    const categoryDisplayLabels = categoryLabels.map((cat, i) => `${cat} (₹${categoryValues[i]})`);
+
+    const monthLabels = Object.keys(monthlyData).map(m => {
+        const monthNames = {
+            "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr",
+            "05": "May", "06": "Jun", "07": "Jul", "08": "Aug",
+            "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+        };
+        return monthNames[m] || m;
+    });
+
+    const monthValues = Object.values(monthlyData);
+
+    const colors = [
+        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e',
+        '#e74a3b', '#858796', '#5a5c69', '#fd7e14', '#20c997'
+    ];
+
+    Chart.register(ChartDataLabels);
+
+    const pieConfig = {
+        type: 'pie',
+        data: {
+            labels: categoryDisplayLabels,
+            datasets: [{
+                data: categoryValues,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, ctx) => {
+                        let label = ctx.chart.data.labels[ctx.dataIndex];
+                        return label;
+                    },
+                    anchor: 'center',
+                    align: 'center',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                },
+                legend: { position: 'bottom' }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('categoryPie'), pieConfig);
+
+    const doughnutConfig = {
+        ...pieConfig,
+        type: 'doughnut'
+    };
+    new Chart(document.getElementById('categoryDoughnut'), doughnutConfig);
+
+    new Chart(document.getElementById('monthlyBar'), {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: '₹ Spent',
+                data: monthValues,
+                backgroundColor: '#4e73df',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('monthlyLine'), {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Monthly Expense',
+                data: monthValues,
+                borderColor: '#36b9cc',
+                backgroundColor: 'rgba(54,185,204,0.2)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#36b9cc'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
