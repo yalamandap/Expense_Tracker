@@ -5,28 +5,55 @@
 ![Technologies](https://img.shields.io/badge/technologies-Spring_Data_jpa%20-green.svg)
 ![Technologies](https://img.shields.io/badge/technologies-Thymeleaf_&_Bootstrap%20-purple.svg)
 
-# Expenses-Tracker-WebApp
-## Overview
-The Expenses Tracker App is a robust financial management solution developed using cutting-edge technologies such as Spring Boot, Spring Security, and MySQL. With user authentication and authorization features, users can securely sign up, sign in, and perform CRUD operations on their expenses. The app's intuitive interface, powered by Thymeleaf and Bootstrap, ensures a seamless user experience. The filtering functionality allows users to efficiently organize and analyze their financial data. Explore the power of streamlined expense tracking and financial control with this feature-rich application.<br> (Screenshots below for more illustration)
+💰 Expenses Tracker App
+The Expenses Tracker App is a robust personal finance management system built using modern technologies like Spring Boot, Spring Security, Thymeleaf, and MySQL. It empowers users to track their daily expenditures, categorize expenses, and visualize financial patterns using dynamic charts and graphs.
 
-## Technologies Used
-- Java
-- Spring boot
-- Spring MVC
-- Spring Security
-- Spring Data (JPA)
-- MySQL
-- Thymeleaf
-- Bootstrap
+With a focus on security, usability, and data analysis, this app ensures users stay informed and in control of their financial life.
 
-## Features
-- **User Authentication and Authorization:** Securely sign up, sign in, and access the app with built-in authentication and authorization.
-- **CRUD Operations:** Perform essential financial tracking actions such as adding, reading, updating, and deleting expenses.
-- **Filtering:** Utilize the filtering feature to efficiently sort and view expenses based on various criteria.
+📌 Features
+🔐 User Authentication & Authorization
+
+Secure sign up, sign in, and role-based access control using Spring Security.
+
+🧾 Expense Management (CRUD)
+
+Add, update, view, and delete daily expenses.
+
+Input categories (e.g., Food, Travel, Bills), amount, and notes.
+
+📊 Visual Analytics
+
+Pie Charts: Category-wise monthly or yearly expense distribution.
+
+Bar/Line Graphs: Daily or monthly total expenses.
+
+Powered by Chart.js for rich and responsive visualizations.
+
+🧮 Filtering and Search
+
+Filter expenses by date, category, or amount range.
+
+Sort by latest, highest amount, or alphabetical category.
+
+📅 Daily Expense Logs
+
+Track individual day-by-day spending to monitor budget patterns.
+
+🛠 Technologies Used
+Layer	Technology
+Backend	Java 21, Spring Boot
+Security	Spring Security
+ORM	Spring Data JPA
+Database	MySQL
+Frontend	Thymeleaf, Bootstrap
+Visualization	Chart.js
+Build Tool	Maven
+
+
 
 ## Getting Started
 1. **Clone the Repository:**
-`git clone https://github.com/your-username/expenses-tracker.git`
+`git clone https://github.com/yalamandap/expenses-tracker.git`
 
 2. **Configure Database:**
 Set up MySQL database and update the application.properties file with your database configuration.
