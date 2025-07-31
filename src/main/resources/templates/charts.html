@@ -22,20 +22,22 @@
         }
 
         .container {
-            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
 
         .chart-box {
             background: #fff;
-            margin-bottom: 30px;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        h2 {
+        .chart-box h2 {
             font-size: 20px;
             color: #2c3e50;
             text-align: center;
@@ -50,22 +52,22 @@
         }
 
         canvas {
-            max-width: 100%;
+            max-width: 90%;
             height: 100% !important;
         }
 
         .back-btn {
-            display: block;
+            display: inline-block;
             text-align: center;
-            margin: 30px auto;
             background: #4e73df;
             color: #fff;
             padding: 12px 24px;
             border-radius: 6px;
             text-decoration: none;
+            margin: 20px 0;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 500px) {
             .chart-container {
                 height: 250px;
             }
@@ -79,10 +81,12 @@
 
 <div class="container">
 
-    <div class="chart-box">
+    <!-- Total Expense -->
+    <div style="grid-column: 1 / -1;" class="chart-box">
         <h2>Total Expense: ₹ <span th:text="${totalExpense}">0</span></h2>
     </div>
 
+    <!-- Chart 1: Pie -->
     <div class="chart-box">
         <h2>Category-wise Expense (Pie)</h2>
         <div class="chart-container">
@@ -90,6 +94,7 @@
         </div>
     </div>
 
+    <!-- Chart 2: Doughnut -->
     <div class="chart-box">
         <h2>Category-wise Expense (Doughnut)</h2>
         <div class="chart-container">
@@ -97,6 +102,7 @@
         </div>
     </div>
 
+    <!-- Chart 3: Monthly Bar -->
     <div class="chart-box">
         <h2>Monthly Expense Trend (Bar)</h2>
         <div class="chart-container">
@@ -104,6 +110,7 @@
         </div>
     </div>
 
+    <!-- Chart 4: Monthly Line -->
     <div class="chart-box">
         <h2>Monthly Expense Trend (Line)</h2>
         <div class="chart-container">
@@ -111,8 +118,10 @@
         </div>
     </div>
 
-    <a class="back-btn" th:href="@{/list}">← Back to Expenses</a>
-
+    <!-- Back Button -->
+    <div style="grid-column: 1 / -1; text-align: center;">
+        <a class="back-btn" th:href="@{/list}">← Back to Expenses</a>
+    </div>
 </div>
 
 <script th:inline="javascript">
@@ -121,7 +130,6 @@
 
     const categoryLabels = Object.keys(categoryData);
     const categoryValues = Object.values(categoryData);
-    const categoryDisplayLabels = categoryLabels.map((cat, i) => `${cat} (₹${categoryValues[i]})`);
 
     const monthLabels = Object.keys(monthlyData).map(m => {
         const monthNames = {
@@ -141,10 +149,11 @@
 
     Chart.register(ChartDataLabels);
 
-    const pieConfig = {
+    // Pie Chart
+    new Chart(document.getElementById('categoryPie'), {
         type: 'pie',
         data: {
-            labels: categoryDisplayLabels,
+            labels: categoryLabels,
             datasets: [{
                 data: categoryValues,
                 backgroundColor: colors
@@ -155,30 +164,54 @@
             plugins: {
                 datalabels: {
                     color: '#fff',
-                    formatter: (value, ctx) => {
-                        let label = ctx.chart.data.labels[ctx.dataIndex];
-                        return label;
-                    },
+                    formatter: value => `₹${value}`,
                     anchor: 'center',
                     align: 'center',
-                    font: {
-                        weight: 'bold',
-                        size: 12
-                    }
+                    font: { weight: 'bold', size: 14 }
                 },
-                legend: { position: 'bottom' }
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 18,
+                        padding: 20
+                    }
+                }
             }
         }
-    };
+    });
 
-    new Chart(document.getElementById('categoryPie'), pieConfig);
+    // Doughnut Chart
+    new Chart(document.getElementById('categoryDoughnut'), {
+        type: 'doughnut',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                data: categoryValues,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                datalabels: {
+                    color: '#fff',
+                    formatter: value => `₹${value}`,
+                    anchor: 'center',
+                    align: 'center',
+                    font: { weight: 'bold', size: 14 }
+                },
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 18,
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
 
-    const doughnutConfig = {
-        ...pieConfig,
-        type: 'doughnut'
-    };
-    new Chart(document.getElementById('categoryDoughnut'), doughnutConfig);
-
+    // Bar Chart
     new Chart(document.getElementById('monthlyBar'), {
         type: 'bar',
         data: {
@@ -204,6 +237,7 @@
         }
     });
 
+    // Line Chart
     new Chart(document.getElementById('monthlyLine'), {
         type: 'line',
         data: {
